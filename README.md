@@ -5,8 +5,8 @@
 - Firebase (Database)
 
 ### Specifications
-Target API: 30
-Min API: 21
+- Target API: 30
+- Min API: 21
 
 ### Developers
 - [Rohinth S](https://github.com/TheRohinth)
