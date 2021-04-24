@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorPrimary">#2eb2ff</color>
+    <color name="colorPrimaryDark">#2eb2ff</color>
     <color name="colorAccent">#03DAC5</color>
 
     <color name="tab_indicator_gray">#c0c0c0</color>
     <color name="intro_title_color">#000000</color>
     <color name="intro_desc_color">#656565</color>
-    <color name="colorOnBoardingIndicator">#A86CFF</color>
+    <color name="colorOnBoardingIndicator">#55FFE5</color>
+
+    <color name="white">#ffffff</color>
 </resources>

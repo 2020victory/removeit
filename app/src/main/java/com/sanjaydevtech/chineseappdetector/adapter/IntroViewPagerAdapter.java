@@ -14,8 +14,8 @@ import java.util.ArrayList;
 
 public class IntroViewPagerAdapter extends FragmentStateAdapter {
 
-    private ArrayList<ScreenItem> screenItems;
-    private Context context;
+    private final ArrayList<ScreenItem> screenItems;
+    private final Context context;
 
     public IntroViewPagerAdapter(@NonNull FragmentActivity fragmentActivity, ArrayList<ScreenItem> screenItems) {
         super(fragmentActivity);

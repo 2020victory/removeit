@@ -3,9 +3,9 @@ package com.sanjaydevtech.chineseappdetector.model;
 import android.graphics.drawable.Drawable;
 
 public class AppItem {
-    private String name;
-    private String packageName;
-    private Drawable icon;
+    private final String name;
+    private final String packageName;
+    private final Drawable icon;
 
     public AppItem(String name, String packageName, Drawable icon) {
         this.name = name;

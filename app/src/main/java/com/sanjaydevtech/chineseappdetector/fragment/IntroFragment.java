@@ -15,14 +15,12 @@ import com.sanjaydevtech.chineseappdetector.databinding.LayoutScreenBinding;
 
 public class IntroFragment extends Fragment {
     private ScreenItem screenItem;
-    private Context context;
     private LayoutScreenBinding binding;
 
     public IntroFragment() {
     }
 
     public IntroFragment(Context context, ScreenItem screenItem) {
-        this.context = context;
         this.screenItem = screenItem;
     }
 
@@ -30,9 +28,14 @@ public class IntroFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = LayoutScreenBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         binding.title.setText(screenItem.getTitle());
         binding.desc.setText(screenItem.getDescription());
         binding.img.setImageResource(screenItem.getImg());
-        return binding.getRoot();
     }
 }

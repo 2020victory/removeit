@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewHolder>{
 
-    private Context context;
+    private final Context context;
     private ArrayList<AppItem> appItems = new ArrayList<>();
 
     public AppListAdapter(Context context) {
@@ -57,7 +57,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     }
 
     static class AppViewHolder extends RecyclerView.ViewHolder {
-        private AppItemBinding binding;
+        private final AppItemBinding binding;
 
         public AppViewHolder(AppItemBinding binding) {
             super(binding.getRoot());
