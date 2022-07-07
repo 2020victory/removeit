@@ -21,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.core.splashscreen.SplashScreenViewProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -48,16 +50,17 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     public static final String TAG = MainActivity.class.getSimpleName();
-    private HashMap<String, Object> mapList = new HashMap<>();
-    private DatabaseReference pkRef = FirebaseDatabase.getInstance().getReference("packages");
+    private final HashMap<String, Object> mapList = new HashMap<>();
+    private final DatabaseReference pkRef = FirebaseDatabase.getInstance().getReference("packages");
     private AppListAdapter adapter;
-    private ArrayList<AppItem> appItems = new ArrayList<>();
+    private final ArrayList<AppItem> appItems = new ArrayList<>();
     private SharedPreferences preferences;
     private boolean isCollapsed = false;
     public static final String CHANNEL_ID = "SIMPLE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, IntroActivity.class);
             startActivity(intent);
             finish();
+            return;
         }
         setSupportActionBar(binding.toolbar);
         Constraints constraints = new Constraints.Builder()
@@ -92,12 +96,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new AppListAdapter(this);
         binding.appListView.setLayoutManager(new GridLayoutManager(this, 2));
         binding.appListView.setAdapter(adapter);
-        binding.btnScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                scanApp();
-            }
-        });
+        binding.btnScan.setOnClickListener(v -> scanApp());
         binding.appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
@@ -147,15 +146,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
-                return true;
-
-            case R.id.action_info:
-                alertForInfo();
-                return true;
+        int itemId = item.getItemId();
+        if (itemId == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (itemId == R.id.action_info) {
+            alertForInfo();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -175,12 +173,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(playIntent);
                     }
                 })
-                .setNegativeButton("Nope", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
+                .setNegativeButton("Nope", (dialog1, which) -> dialog1.dismiss())
                 .create();
         dialog.show();
     }
@@ -217,14 +210,10 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     isThereApps(false, "GREAT NO CHINESE APPS");
                 }
-                Runnable runnable = new Runnable(){
-
-                    @Override
-                    public void run() {
-                        binding.progressBar.setVisibility(View.INVISIBLE);
-                        adapter.setAppItems(appItems);
-                        binding.appBarLayout.setExpanded(false, true);
-                    }
+                Runnable runnable = () -> {
+                    binding.progressBar.setVisibility(View.INVISIBLE);
+                    adapter.setAppItems(appItems);
+                    binding.appBarLayout.setExpanded(false, true);
                 };
                 new Handler().postDelayed(runnable, 1500);
             }

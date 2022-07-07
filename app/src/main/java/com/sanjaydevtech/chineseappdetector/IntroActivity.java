@@ -55,20 +55,17 @@ public class IntroActivity extends AppCompatActivity {
                 setCurrentIndicator(position);
             }
         });
-        binding.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int currentItem = binding.viewPager2.getCurrentItem();
-                if (currentItem == adapter.getItemCount() - 1) {
-                    editor = preferences.edit();
-                    editor.putInt("intro", 1);
-                    editor.apply();
-                    Intent intent = new Intent(IntroActivity.this, SplashActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    binding.viewPager2.setCurrentItem(currentItem+1 , true);
-                }
+        binding.button.setOnClickListener(v -> {
+            int currentItem = binding.viewPager2.getCurrentItem();
+            if (currentItem == adapter.getItemCount() - 1) {
+                editor = preferences.edit();
+                editor.putInt("intro", 1);
+                editor.apply();
+                Intent intent = new Intent(IntroActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                binding.viewPager2.setCurrentItem(currentItem+1 , true);
             }
         });
     }

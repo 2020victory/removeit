@@ -41,13 +41,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         final AppItem appItem = appItems.get(position);
         holder.binding.appName.setText(appItem.getName());
         holder.binding.imageView.setImageDrawable(appItem.getIcon());
-        holder.binding.delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DELETE);
-                intent.setData(Uri.parse("package:"+appItem.getPackageName()));
-                context.startActivity(intent);
-            }
+        holder.binding.delete.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_DELETE);
+            intent.setData(Uri.parse("package:"+appItem.getPackageName()));
+            context.startActivity(intent);
         });
     }
 

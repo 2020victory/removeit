@@ -21,7 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -29,7 +31,6 @@ public class AppCheckWorkerClass extends Worker {
 
     private final Context context;
     private final DatabaseReference pkRef = FirebaseDatabase.getInstance().getReference("packages");
-    private final HashMap<String, Object> mapList = new HashMap<>();
     public static final String CHANNEL_ID = "ALERT";
     private final SharedPreferences preferences;
 
@@ -45,13 +46,12 @@ public class AppCheckWorkerClass extends Worker {
         if (!preferences.getBoolean("alert", false)) {
             return Result.success();
         }
-
-        mapList.clear();
+        Set<String> userApps = new HashSet<>();
         final PackageManager packageManager = context.getPackageManager();
         List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
         for (ApplicationInfo applicationInfo : packages) {
             if ((applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                mapList.put(applicationInfo.packageName, null);
+                userApps.add(applicationInfo.packageName);
             }
         }
         pkRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -60,7 +60,7 @@ public class AppCheckWorkerClass extends Worker {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String packageName = dataSnapshot.getKey().replaceAll("-", ".").trim();
-                    if (mapList.containsKey(packageName)) {
+                    if (userApps.contains(packageName)) {
                         isPresent = true;
                         break;
                     }
@@ -84,7 +84,7 @@ public class AppCheckWorkerClass extends Worker {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, "Chinese apps installation alert", NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(notificationChannel);
         }
-        Intent intent = new Intent(context, SplashActivity.class);
+        Intent intent = new Intent(context, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder notifyBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)

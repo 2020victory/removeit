@@ -28,19 +28,15 @@ public class SettingsActivity extends AppCompatActivity {
         binding.switchCheck.setChecked(isOn);
         isValid = true;
         editor = preferences.edit();
-        binding.switchCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (!isValid) {
-                    return;
-                }
-
-                editor.putBoolean("alert", isChecked);
-                editor.apply();
-                Snackbar.make(binding.base, "Changes saved", Snackbar.LENGTH_SHORT).show();
-
-
+        binding.switchCheck.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (!isValid) {
+                return;
             }
+            editor.putBoolean("alert", isChecked);
+            editor.apply();
+            Snackbar.make(binding.base, "Changes saved", Snackbar.LENGTH_SHORT).show();
+
+
         });
     }
 }
