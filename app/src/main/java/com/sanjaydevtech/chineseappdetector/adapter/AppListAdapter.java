@@ -1,11 +1,7 @@
 package com.sanjaydevtech.chineseappdetector.adapter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -44,8 +40,8 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     @Override
     public void onBindViewHolder(@NonNull AppViewHolder holder, int position) {
         final AppItem appItem = appItems.get(position);
-        holder.binding.appName.setText(appItem.getName());
-        holder.binding.imageView.setImageDrawable(appItem.getIcon());
+        holder.binding.appName.setText(appItem.name());
+        holder.binding.imageView.setImageDrawable(appItem.icon());
         holder.binding.delete.setOnClickListener(v -> {
             onAppItemClickListener.onClick(appItem);
         });

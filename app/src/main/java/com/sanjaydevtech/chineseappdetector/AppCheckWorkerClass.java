@@ -1,5 +1,7 @@
 package com.sanjaydevtech.chineseappdetector;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -20,12 +22,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class AppCheckWorkerClass extends Worker {
 

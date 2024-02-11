@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         adapter = new AppListAdapter(this);
         adapter.setOnAppItemClickListener(item -> {
             if (defaultPrefs.getInt("showRemoveWarning", 0) == 0) {
-                // Show dialog
                 new AlertDialog.Builder(this)
                         .setTitle("Warning")
                         .setCancelable(false)
@@ -115,16 +114,14 @@ public class MainActivity extends AppCompatActivity {
                             editor.putInt("showRemoveWarning", 1);
                             editor.apply();
                             Intent intent = new Intent(Intent.ACTION_DELETE);
-                            intent.setData(Uri.parse("package:" + item.getPackageName()));
+                            intent.setData(Uri.parse("package:" + item.packageName()));
                             startActivity(intent);
                         })
-                        .setNegativeButton("Back", (d, _which) -> {
-                            d.dismiss();
-                        })
+                        .setNegativeButton("Back", (d, _which) -> d.dismiss())
                         .show();
             } else {
                 Intent intent = new Intent(Intent.ACTION_DELETE);
-                intent.setData(Uri.parse("package:" + item.getPackageName()));
+                intent.setData(Uri.parse("package:" + item.packageName()));
                 startActivity(intent);
             }
         });

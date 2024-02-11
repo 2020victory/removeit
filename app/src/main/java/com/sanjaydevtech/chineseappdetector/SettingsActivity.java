@@ -1,10 +1,9 @@
 package com.sanjaydevtech.chineseappdetector;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.CompoundButton;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.sanjaydevtech.chineseappdetector.databinding.ActivitySettingsBinding;
@@ -13,7 +12,6 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private ActivitySettingsBinding binding;
-    private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
     private boolean isValid = false;
 
@@ -22,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySettingsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        preferences = getSharedPreferences("settings", MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
         setSupportActionBar(binding.toolbar);
         boolean isOn = preferences.getBoolean("alert", false);
         binding.switchCheck.setChecked(isOn);

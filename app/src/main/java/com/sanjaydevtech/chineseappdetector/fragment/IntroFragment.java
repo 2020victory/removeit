@@ -1,6 +1,5 @@
 package com.sanjaydevtech.chineseappdetector.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,7 @@ public class IntroFragment extends Fragment {
     public IntroFragment() {
     }
 
-    public IntroFragment(Context context, ScreenItem screenItem) {
+    public IntroFragment(ScreenItem screenItem) {
         this.screenItem = screenItem;
     }
 
@@ -34,8 +33,8 @@ public class IntroFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        binding.title.setText(screenItem.getTitle());
-        binding.desc.setText(screenItem.getDescription());
-        binding.img.setImageResource(screenItem.getImg());
+        binding.title.setText(screenItem.title());
+        binding.desc.setText(screenItem.description());
+        binding.img.setImageResource(screenItem.img());
     }
 }
