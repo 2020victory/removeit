@@ -16,8 +16,9 @@ import com.sanjaydevtech.chineseappdetector.model.AppItem;
 
 import java.util.ArrayList;
 
-public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewHolder>{
+public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewHolder> {
 
+    private OnAppItemClickListener onAppItemClickListener;
     private final Context context;
     private ArrayList<AppItem> appItems = new ArrayList<>();
 
@@ -28,6 +29,10 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
     public void setAppItems(ArrayList<AppItem> appItems) {
         this.appItems = appItems;
         notifyDataSetChanged();
+    }
+
+    public void setOnAppItemClickListener(OnAppItemClickListener onAppItemClickListener) {
+        this.onAppItemClickListener = onAppItemClickListener;
     }
 
     @NonNull
@@ -42,9 +47,7 @@ public class AppListAdapter extends RecyclerView.Adapter<AppListAdapter.AppViewH
         holder.binding.appName.setText(appItem.getName());
         holder.binding.imageView.setImageDrawable(appItem.getIcon());
         holder.binding.delete.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_DELETE);
-            intent.setData(Uri.parse("package:"+appItem.getPackageName()));
-            context.startActivity(intent);
+            onAppItemClickListener.onClick(appItem);
         });
     }
 

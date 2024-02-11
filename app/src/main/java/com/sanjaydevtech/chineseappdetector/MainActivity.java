@@ -1,5 +1,6 @@
 package com.sanjaydevtech.chineseappdetector;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,12 +18,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.splashscreen.SplashScreen;
-import androidx.core.splashscreen.SplashScreenViewProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -54,9 +56,13 @@ public class MainActivity extends AppCompatActivity {
     private final DatabaseReference pkRef = FirebaseDatabase.getInstance().getReference("packages");
     private AppListAdapter adapter;
     private final ArrayList<AppItem> appItems = new ArrayList<>();
-    private SharedPreferences preferences;
+    private SharedPreferences defaultPrefs;
     private boolean isCollapsed = false;
     public static final String CHANNEL_ID = "SIMPLE";
+
+    private final ActivityResultLauncher<String> requestNotificationPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), o -> {
+
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +70,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        preferences = getSharedPreferences("intro", MODE_PRIVATE);
-        if (!preferences.contains("intro") || preferences.getInt("intro", 0) == 0) {
+        defaultPrefs = getSharedPreferences("defaults", MODE_PRIVATE);
+        if (!defaultPrefs.contains("intro") || defaultPrefs.getInt("intro", 0) == 0) {
             Intent intent = new Intent(this, IntroActivity.class);
             startActivity(intent);
             finish();
             return;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
         setSupportActionBar(binding.toolbar);
         Constraints constraints = new Constraints.Builder()
@@ -80,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 .setConstraints(constraints)
                 .setInitialDelay(15, TimeUnit.MINUTES)
                 .build();
-
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(AppCheckWorkerClass.CHANNEL_ID, ExistingPeriodicWorkPolicy.KEEP, periodicWorkRequest);
 
@@ -94,12 +102,39 @@ public class MainActivity extends AppCompatActivity {
         binding.progressBar.setIndeterminateDrawable(new CubeGrid());
         isThereApps(false, "NO APPS SCANNED YET");
         adapter = new AppListAdapter(this);
+        adapter.setOnAppItemClickListener(item -> {
+            if (defaultPrefs.getInt("showRemoveWarning", 0) == 0) {
+                // Show dialog
+                new AlertDialog.Builder(this)
+                        .setTitle("Warning")
+                        .setCancelable(false)
+                        .setMessage("If you proceed, this could uninstall the following application from your device.")
+                        .setPositiveButton("Proceed", (d, _which) -> {
+                            d.dismiss();
+                            SharedPreferences.Editor editor = defaultPrefs.edit();
+                            editor.putInt("showRemoveWarning", 1);
+                            editor.apply();
+                            Intent intent = new Intent(Intent.ACTION_DELETE);
+                            intent.setData(Uri.parse("package:" + item.getPackageName()));
+                            startActivity(intent);
+                        })
+                        .setNegativeButton("Back", (d, _which) -> {
+                            d.dismiss();
+                        })
+                        .show();
+            } else {
+                Intent intent = new Intent(Intent.ACTION_DELETE);
+                intent.setData(Uri.parse("package:" + item.getPackageName()));
+                startActivity(intent);
+            }
+        });
         binding.appListView.setLayoutManager(new GridLayoutManager(this, 2));
         binding.appListView.setAdapter(adapter);
         binding.btnScan.setOnClickListener(v -> scanApp());
         binding.appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;
             int scrollRange = -1;
+
             @Override
             public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
                 if (scrollRange == -1) {
@@ -193,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 appItems.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String packageName = dataSnapshot.getKey().replaceAll("-",".").trim();
+                    String packageName = dataSnapshot.getKey().replaceAll("-", ".").trim();
                     if (mapList.containsKey(packageName)) {
                         ApplicationInfo applicationInfo;
                         try {

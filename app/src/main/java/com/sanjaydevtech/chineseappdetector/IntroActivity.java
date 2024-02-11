@@ -1,7 +1,9 @@
 package com.sanjaydevtech.chineseappdetector;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +14,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.sanjaydevtech.chineseappdetector.adapter.IntroViewPagerAdapter;
@@ -27,6 +32,12 @@ public class IntroActivity extends AppCompatActivity {
     private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
+    private final ActivityResultLauncher<String> requestNotificationPermission = registerForActivityResult(new ActivityResultContracts.RequestPermission(), o -> {
+        Intent intent = new Intent(IntroActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +50,7 @@ public class IntroActivity extends AppCompatActivity {
             window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             window.setStatusBarColor(Color.WHITE);
         }
-        preferences = getSharedPreferences("intro", MODE_PRIVATE);
+        preferences = getSharedPreferences("defaults", MODE_PRIVATE);
         ArrayList<ScreenItem> screenItems = new ArrayList<>();
         screenItems.add(new ScreenItem("Hi there", "Welcome to RemoveIt", R.mipmap.ic_launcher));
         screenItems.add(new ScreenItem("Stay Safe, Stay Secure", "Protect yourself from chinese apps", R.drawable.screen01));
@@ -61,9 +72,13 @@ public class IntroActivity extends AppCompatActivity {
                 editor = preferences.edit();
                 editor.putInt("intro", 1);
                 editor.apply();
-                Intent intent = new Intent(IntroActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
+                } else {
+                    Intent intent = new Intent(IntroActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
             } else {
                 binding.viewPager2.setCurrentItem(currentItem+1 , true);
             }
