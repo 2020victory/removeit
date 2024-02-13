@@ -71,12 +71,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         defaultPrefs = getSharedPreferences("defaults", MODE_PRIVATE);
-        if (!defaultPrefs.contains("intro") || defaultPrefs.getInt("intro", 0) == 0) {
-            Intent intent = new Intent(this, IntroActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestNotificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS);
         }
@@ -247,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
                     adapter.setAppItems(appItems);
                     binding.appBarLayout.setExpanded(false, true);
                 };
-                new Handler().postDelayed(runnable, 1500);
+                new Handler().postDelayed(runnable, 500);
             }
 
             @Override
