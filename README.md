@@ -5,7 +5,7 @@
 - Firebase (Database)
 
 ### Specifications
-- Target API: 30
+- Target API: 34
 - Min API: 21
 
 ### Developers
